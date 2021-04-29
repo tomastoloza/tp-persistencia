@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+.DS_Store
+.idea/
+
+# Ignorado para no subir las credenciales
+api/config/config.json
