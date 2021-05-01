@@ -1,17 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-
-    let Materia = sequelize.define('materia', {
+    return sequelize.define('materia', {
         nombre: DataTypes.STRING,
-        id_carrera: DataTypes.INTEGER
-    }, {underscored: true})
-
-    let Carrera = sequelize.define('carrera', {
-        nombre: DataTypes.STRING
+        carrera_id: DataTypes.INT
     }, {});
-
-    Materia.associate = function (models) {
-        Materia.belongsTo(Carrera)
-    };
-    return Materia;
 };
