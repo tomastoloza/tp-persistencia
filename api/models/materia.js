@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('materia', {
+    return sequelize.define('materias', {
         nombre: DataTypes.STRING,
-        carrera_id: DataTypes.INT
+        carreraId: DataTypes.INTEGER
     }, {});
 };
