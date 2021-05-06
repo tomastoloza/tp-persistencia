@@ -1,3 +1,4 @@
+//Modelo para materias
 'use strict';
 module.exports = {
     up: (queryInterface, Sequelize) => {
