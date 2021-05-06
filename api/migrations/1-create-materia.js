@@ -1,4 +1,4 @@
-//Modelo para materias
+//Modelo para materias Primera Iteracion de codigo
 'use strict';
 module.exports = {
     up: (queryInterface, Sequelize) => {
