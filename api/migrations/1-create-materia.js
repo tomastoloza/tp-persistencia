@@ -13,11 +13,7 @@ module.exports = {
                 type: Sequelize.STRING
             },
             carreraId: {
-                type: Sequelize.INTEGER,
-                references: {
-                    model: 'carreras',
-                    key: 'id',
-                }
+                type: Sequelize.INTEGER
             },
             createdAt: {
                 allowNull: false,

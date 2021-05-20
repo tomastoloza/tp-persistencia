@@ -1,10 +1,9 @@
 {
   "development": {
-    "username": "galo",
+    "username": "root",
     "password": "1234",
     "database": "prueba",
     "host": "localhost",
     "dialect": "mariadb"
-    
   }
 }
