@@ -1,13 +1,13 @@
 let express = require("express");
 let router = express.Router();
 let models = require("../models");
-
+const {Op} = require("sequelize");
 router.get("/", (req, res) => {
     console.log("Esto es un mensaje para ver en consola");
     models.materias
         .findAll({
             attributes: ["id", "nombre", "carreraId"],
-            include: [{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
+            include: [{as: 'carreraRelacionada', model: models.carrera, attributes: ["id", "nombre"]}]
         })
         .then(materia => res.send(materia))
         .catch(() => res.sendStatus(500));
@@ -39,6 +39,24 @@ const findMateria = (id, {onSuccess, onNotFound, onError}) => {
         .then(materia => (materia ? onSuccess(materia) : onNotFound()))
         .catch(() => onError());
 };
+
+router.get("/findByName", (req, res) => {
+    models.materias
+        .findAll({
+            attributes: ["id", "nombre"],
+            where: {
+                nombre: {
+                    [Op.like]: `%${req.body.nombre}%`
+                }
+            }
+        })
+        .then(materias => {
+            return (materias.length === 0)? res.sendStatus(404): res.send(materias);
+        })
+        .catch(() => {
+            res.sendStatus(500);
+        });
+});
 
 router.get("/:id", (req, res) => {
     findMateria(req.params.id, {
