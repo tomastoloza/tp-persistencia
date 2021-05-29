@@ -34,8 +34,9 @@ router.post("/", (req, res) => {
 const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
   models.carrera
     .findOne({
-      attributes: ["id", "nombre"],
-      where: { id }
+        attributes: ["id", "nombre"],
+        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}],
+        where: { id }
     })
     .then(carrera => (carrera ? onSuccess(carrera) : onNotFound()))
     .catch(() => onError());
