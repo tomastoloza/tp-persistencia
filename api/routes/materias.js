@@ -3,13 +3,25 @@ let router = express.Router();
 let models = require("../models");
 
 router.get("/", (req, res) => {
-    console.log("Esto es un mensaje para ver en consola");
+    console.log("comienzo servicio get [materias]");
+    let pag = req.body.paginaActual - 1
+    if(pag<0){
+        const message = {
+            "errorCode": "400",
+            "errorMessage": "Numero de pagina invalido"
+        }
+        res.send(message)
+        console.log("ingreso un numero de pagina invalido")
+        return;
+    }
+    let offset = pag * req.body.cantidadAVer;
+    // Si paginaActual no esta definida en el body, no se le envia a la request
     models.materias
         .findAll({
             attributes: ["id", "nombre", "carreraId"],
             include: [{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
-            offset: 2,
-            limit: 2
+            offset: offset>0?offset:null,
+            limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
         })
         .then(materia => res.send(materia))
         .catch(() => res.sendStatus(500));

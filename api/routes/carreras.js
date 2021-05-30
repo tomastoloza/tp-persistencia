@@ -3,11 +3,23 @@ var router = express.Router();
 var models = require("../models");
 
 router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
-  models.carrera
+  console.log("comienzo servicio get [carreras]");
+  let pag = req.body.paginaActual - 1
+  if(pag<0){
+      const message = {
+          "errorCode": "400",
+          "errorMessage": "Numero de pagina invalido"
+      }
+      res.send(message)
+      console.log("ingreso un numero de pagina invalido")
+      return;
+  }
+    let offset = pag * req.body.cantidadAVer;
+    models.carrera
     .findAll({
-        offset: 2,
-        limit: 2,
+        // Si paginaActual no esta definida en el body, no se le envia a la request
+        offset: offset>0?offset:null,
+        limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
         attributes: ["id", "nombre"]
     })
     .then(carreras => res.send(carreras))
