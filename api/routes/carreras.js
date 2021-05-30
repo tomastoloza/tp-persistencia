@@ -6,9 +6,9 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.carrera
     .findAll({
-        offset: 2,
-        limit: 2,
-        attributes: ["id", "nombre"]
+        attributes: ["id", "nombre"],
+        offset: req.body.paginaActual*req.body.cantidadAVer,
+        limit: req.body.cantidadAVer
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));

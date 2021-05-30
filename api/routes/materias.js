@@ -8,8 +8,8 @@ router.get("/", (req, res) => {
         .findAll({
             attributes: ["id", "nombre", "carreraId"],
             include: [{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
-            offset: 2,
-            limit: 2
+            offset: req.body.paginaActual*req.body.cantidadAVer,
+            limit: req.body.cantidadAVer
         })
         .then(materia => res.send(materia))
         .catch(() => res.sendStatus(500));
