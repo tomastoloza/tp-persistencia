@@ -1,16 +1,23 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const messageFactory = require("./messageFactory")
+const checkPagination = messageFactory.checkPagination
+
 
 router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
-  models.carrera
+  console.log("comienzo servicio get [carreras]");
+  let pag = req.body.paginaActual - 1
+    if(!checkPagination(pag, res))
+        return;
+    let offset = pag * req.body.cantidadAVer;
+    models.carrera
     .findAll({
-        offset: 2,
-        limit: 2,
+        // Si paginaActual no esta definida en el body, no se le envia a la request
+        offset: offset>0?offset:null,
+        limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
         attributes: ["id", "nombre"],
-        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}],
-
+        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}]
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
