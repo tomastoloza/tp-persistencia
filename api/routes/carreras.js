@@ -16,7 +16,8 @@ router.get("/", (req, res) => {
         // Si paginaActual no esta definida en el body, no se le envia a la request
         offset: offset>0?offset:null,
         limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
-        attributes: ["id", "nombre"]
+        attributes: ["id", "nombre"],
+        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}]
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
@@ -27,7 +28,7 @@ router.post("/", (req, res) => {
     .create({ nombre: req.body.nombre })
     .then(carrera => res.status(201).send({ id: carrera.id }))
     .catch(error => {
-      if (error == "SequelizeUniqueConstraintError: Validation error") {
+      if (error === "SequelizeUniqueConstraintError: Validation error") {
         res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
       }
       else {
@@ -40,8 +41,9 @@ router.post("/", (req, res) => {
 const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
   models.carrera
     .findOne({
-      attributes: ["id", "nombre"],
-      where: { id }
+        attributes: ["id", "nombre"],
+        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}],
+        where: { id }
     })
     .then(carrera => (carrera ? onSuccess(carrera) : onNotFound()))
     .catch(() => onError());
