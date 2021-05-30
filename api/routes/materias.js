@@ -1,19 +1,14 @@
 let express = require("express");
 let router = express.Router();
 let models = require("../models");
+const messageFactory = require("./messageFactory")
+const checkPagination = messageFactory.checkPagination
 
 router.get("/", (req, res) => {
     console.log("comienzo servicio get [materias]");
     let pag = req.body.paginaActual - 1
-    if(pag<0){
-        const message = {
-            "errorCode": "400",
-            "errorMessage": "Numero de pagina invalido"
-        }
-        res.send(message)
-        console.log("ingreso un numero de pagina invalido")
+    if(!checkPagination(pag, res))
         return;
-    }
     let offset = pag * req.body.cantidadAVer;
     // Si paginaActual no esta definida en el body, no se le envia a la request
     models.materias
@@ -35,7 +30,7 @@ router.post("/", (req, res) => {
         })
         .then(materia => res.status(201).send({id: materia.id}))
         .catch(error => {
-            if (error == "SequelizeUniqueConstraintError: Validation error") {
+            if (error === "SequelizeUniqueConstraintError: Validation error") {
                 res.status(400).send('Bad request: existe otra materia con el mismo nombre')
             } else {
                 console.log(`Error al intentar insertar en la base de datos: ${error}`)
@@ -71,7 +66,7 @@ router.put("/:id", (req, res) => {
             }, {fields: ["nombre", "carreraId"]})
             .then(() => res.sendStatus(200))
             .catch(error => {
-                if (error == "SequelizeUniqueConstraintError: Validation error") {
+                if (error === "SequelizeUniqueConstraintError: Validation error") {
                     res.status(400).send('Bad request: existe otra materia con el mismo nombre')
                 } else {
                     console.log(`Error al intentar actualizar la base de datos: ${error}`)

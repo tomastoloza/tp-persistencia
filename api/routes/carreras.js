@@ -1,19 +1,15 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const messageFactory = require("./messageFactory")
+const checkPagination = messageFactory.checkPagination
+
 
 router.get("/", (req, res) => {
   console.log("comienzo servicio get [carreras]");
   let pag = req.body.paginaActual - 1
-  if(pag<0){
-      const message = {
-          "errorCode": "400",
-          "errorMessage": "Numero de pagina invalido"
-      }
-      res.send(message)
-      console.log("ingreso un numero de pagina invalido")
-      return;
-  }
+    if(!checkPagination(pag, res))
+        return;
     let offset = pag * req.body.cantidadAVer;
     models.carrera
     .findAll({
@@ -65,7 +61,7 @@ router.put("/:id", (req, res) => {
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
-        if (error == "SequelizeUniqueConstraintError: Validation error") {
+        if (error === "SequelizeUniqueConstraintError: Validation error") {
           res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
         }
         else {
