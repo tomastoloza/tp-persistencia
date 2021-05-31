@@ -1,33 +1,29 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const messageFactory = require("./messageFactory")
+const checkPagination = messageFactory.checkPagination
 
 
 router.get("/", (req, res) => {
   console.log("comienzo servicio get [carreras]");
-  let pag = req.body.paginaActual - 1
-  //AUTHENTICATION
-  if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in the readme
+    //AUTHENTICATION
+    if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in the readme
         res.status(404).send({message: "Unauthorized"})
-  }
-  if(pag<0){
-    const message = {
-          "errorCode": "400",
-          "errorMessage": "Invalid page number"
     }
-    res.send(message)
-    console.log("ingreso un numero de pagina invalido")
-    return;
-  }
-
-  let offset = pag * req.body.cantidadAVer;
-  models.carrera
-  .findAll({
-      // Si paginaActual no esta definida en el body, no se le envia a la request
-      offset: offset>0?offset:null,
-      limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
-      attributes: ["id", "nombre"]
-  }).then(carreras => res.send(carreras))
+  let pag = req.body.paginaActual - 1
+    if(!checkPagination(pag, res))
+        return;
+    let offset = pag * req.body.cantidadAVer;
+    models.carrera
+    .findAll({
+        // Si paginaActual no esta definida en el body, no se le envia a la request
+        offset: offset>0?offset:null,
+        limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
+        attributes: ["id", "nombre"],
+        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}]
+    })
+    .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
 });
 
@@ -42,7 +38,7 @@ router.post("/", (req, res) => {
     .create({ nombre: req.body.nombre })
     .then(carrera => res.status(201).send({ id: carrera.id }))
     .catch(error => {
-      if (error == "SequelizeUniqueConstraintError: Validation error") {
+      if (error === "SequelizeUniqueConstraintError: Validation error") {
         res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
       }
       else {
@@ -55,8 +51,9 @@ router.post("/", (req, res) => {
 const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
   models.carrera
     .findOne({
-      attributes: ["id", "nombre"],
-      where: { id }
+        attributes: ["id", "nombre"],
+        include: [{as:'materias', model:models.materias, attributes: ["id","nombre"]}],
+        where: { id }
     })
     .then(carrera => (carrera ? onSuccess(carrera) : onNotFound()))
     .catch(() => onError());
@@ -81,7 +78,7 @@ router.put("/:id", (req, res) => {
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
-        if (error == "SequelizeUniqueConstraintError: Validation error") {
+        if (error === "SequelizeUniqueConstraintError: Validation error") {
           res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
         }
         else {
@@ -114,7 +111,5 @@ router.delete("/:id", (req, res) => {
     onError: () => res.sendStatus(500)
   });
 });
-
-
 
 module.exports = router;

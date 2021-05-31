@@ -3,28 +3,14 @@
 Trabajo en progreso por [@tomastoloza](https://github.com/tomastoloza/)
 y [@galosalerno](https://github.com/galosalerno/)
 
-## Request Authentication:
-Key | Value
---- | --- 
-Type      | Basic Auth 
-Username  | persistencia
-Password  | 1234
-   
-## Curl  
-
-```http request
-curl --location --request GET 'localhost:3001/mat' \
---header 'Authorization: Basic cGVyc2lzdGVuY2lhOjEyMzQ='
-```
-
 ## Materias
 
 ### `GET` Request body example
 
 ```json
 {
-    "paginaActual": 0, //Optional
-    "cantidadAVer": 2 //Optional
+  "paginaActual": 0,
+  "cantidadAVer": 2
 }
 ```
 
