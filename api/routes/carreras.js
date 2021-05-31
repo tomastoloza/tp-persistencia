@@ -2,32 +2,43 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
+
 router.get("/", (req, res) => {
   console.log("comienzo servicio get [carreras]");
   let pag = req.body.paginaActual - 1
-  if(pag<0){
-      const message = {
-          "errorCode": "400",
-          "errorMessage": "Numero de pagina invalido"
-      }
-      res.send(message)
-      console.log("ingreso un numero de pagina invalido")
-      return;
+  //AUTHENTICATION
+  if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in the readme
+        res.status(404).send({message: "Unauthorized"})
   }
-    let offset = pag * req.body.cantidadAVer;
-    models.carrera
-    .findAll({
-        // Si paginaActual no esta definida en el body, no se le envia a la request
-        offset: offset>0?offset:null,
-        limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
-        attributes: ["id", "nombre"]
-    })
-    .then(carreras => res.send(carreras))
+  if(pag<0){
+    const message = {
+          "errorCode": "400",
+          "errorMessage": "Invalid page number"
+    }
+    res.send(message)
+    console.log("ingreso un numero de pagina invalido")
+    return;
+  }
+
+  let offset = pag * req.body.cantidadAVer;
+  models.carrera
+  .findAll({
+      // Si paginaActual no esta definida en el body, no se le envia a la request
+      offset: offset>0?offset:null,
+      limit: req.body.cantidadAVer?req.body.cantidadAVer:null,
+      attributes: ["id", "nombre"]
+  }).then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
 });
 
 router.post("/", (req, res) => {
-  models.carrera
+    //AUTHENTICATION
+    if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in readme
+        res.status(404).send({message: "Unauthorized"})
+    }
+
+    //INSERT ROW
+    models.carrera
     .create({ nombre: req.body.nombre })
     .then(carrera => res.status(201).send({ id: carrera.id }))
     .catch(error => {
@@ -60,7 +71,12 @@ router.get("/:id", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  const onSuccess = carrera =>
+    //AUTHENTICATION
+    if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in the readme
+        res.status(404).send({message: "Unauthorized"})
+    }
+    //UPDATE ROW
+    const onSuccess = carrera =>
     carrera
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
       .then(() => res.sendStatus(200))
@@ -81,7 +97,13 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const onSuccess = carrera =>
+    //AUTHENTICATION
+    if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in the readme
+        res.status(404).send({message: "Unauthorized"})
+    }
+
+    //DELATE ROW
+    const onSuccess = carrera =>
     carrera
       .destroy()
       .then(() => res.sendStatus(200))
@@ -92,5 +114,7 @@ router.delete("/:id", (req, res) => {
     onError: () => res.sendStatus(500)
   });
 });
+
+
 
 module.exports = router;

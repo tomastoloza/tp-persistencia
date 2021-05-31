@@ -5,11 +5,11 @@
 #    "paginaActual": 1,
 #    "cantidadAVer": 2
 #}'
-GET localhost:3001/car
+GET localhost:3001/mat
 Content-Type: application/json
 
 {
-  "paginaActual": 0,
+  "paginaActual": 1,
   "cantidadAVer": 2
 }
 
