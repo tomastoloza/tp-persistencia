@@ -1,5 +1,6 @@
 module.exports = {
-    checkPagination: checkPagination
+    checkPagination: checkPagination,
+    validateConnection: validateConnection
 }
 
 function checkPagination(pag, res) {
@@ -8,4 +9,10 @@ function checkPagination(pag, res) {
         return false;
     }
     return true;
+}
+
+function validateConnection(auth, res) {
+    if(auth !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ=") { //Credentials in the readme
+        res.status(401).send({message: "Unauthorized"})
+    }
 }
