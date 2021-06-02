@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var carrerasRouter = require('./routes/carreras');
 var materiasRouter = require('./routes/materias');
+var usuariosRouter = require('./routes/usuarios');
+const {validateConnection} = require("./routes/messageFactory");
 
 
 var app = express();
@@ -19,9 +21,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+// app.use(validateConnection)
 app.use('/car', carrerasRouter);
 app.use('/mat', materiasRouter);
+app.use('/usr', usuariosRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
