@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
 
         materia.belongsTo(models.carrera// modelo al que pertenece
             , {
-                as: 'carreraRelacionada',
+                as: 'Carrera-Relacionada',  // nombre de mi relacion
                 foreignKey: 'carreraId'     // campo con el que voy a igualar
             })
     }
