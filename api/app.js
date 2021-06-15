@@ -6,7 +6,6 @@ var logger = require('morgan');
 var carrerasRouter = require('./routes/carreras');
 var materiasRouter = require('./routes/materias');
 var usuariosRouter = require('./routes/usuarios');
-const {validateConnection} = require("./routes/messageFactory");
 
 
 var app = express();

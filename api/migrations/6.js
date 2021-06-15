@@ -1,15 +1,12 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('carreras', {
-      id: {
+    return queryInterface.createTable('usuarios', {
+      token: {
+        type: Sequelize.STRING,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      nombre: {
-        type: Sequelize.STRING
+        unique: true
       },
       createdAt: {
         allowNull: false,
@@ -22,6 +19,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('carreras');
+    return queryInterface.dropTable('usuarios');
   }
 };

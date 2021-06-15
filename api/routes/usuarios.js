@@ -1,82 +1,63 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
-const messageFactory = require("./messageFactory")
-const {randomString} = messageFactory
+const {validateConnection} = require("./validations");
+const getToken = (auth) => {
+    return auth.split(" ")[1];
+}
 
+function findUsers(req) {
+    return models.usuario
+        .findAll({
+            attributes: ["token"],
+            where: {
+                token: getToken(req.headers.authorization)
+            }
+        });
+}
 
 router.get("/", (req, res) => {
-    models.usuario
-        .findAll({
-            attributes: ["id", "nombre", "token"],
-        })
-        .then(usuario => res.send(usuario))
+    if (!validateConnection(req.headers.authorization, res))
+        return;
+    findUsers().then(usuario => res.send(usuario))
         .catch(() => res.sendStatus(500));
+
 });
 
 router.post("/", (req, res) => {
-    let token = randomString(32, '#aA')
-    models.usuario.create(
-        {
-            nombre: req.body.nombre,
-            password: req.body.password,
-            token: token
-        }
-    ).then(
-        usuario => res.status(201).send({
-            id: usuario.id,
-            token: token
-        })
-    ).catch(
-        error => {
-            if (error === "SequelizeUniqueConstraintError: Validation error") {
-                res.status(400).send('Bad request: existe otro usuario con el mismo nombre')
+    //AUTHENTICATION
+    if (!validateConnection(req.headers.authorization, res))
+        return;
+    //INSERT ROW
+    models.usuario
+        .create({token: getToken(req.headers.authorization)})
+        .then(user => res.status(201).send({token: user.token}))
+        .catch(error => {
+            console.log("error =", error.errors[0].message);
+            if (error.errors[0].message === "PRIMARY must be unique") {
+                res.status(400).send('Bad request: ya existe este usuario')
             } else {
                 console.log(`Error al intentar insertar en la base de datos: ${error}`)
-                res.status(500).send(error)
+                res.sendStatus(500)
             }
-        }
-    )
+        });
 });
 
-//Podemos usar este metodo para validar si existe el usuario en la db
-const findUser = (id, {onSuccess, onNotFound, onError}) => {
-    models.usuario
-        .findOne({
-            attributes: ["id", "nombre", "token"],
-            where: {id}
-        })
-        .then(usuario => (usuario ? onSuccess(usuario) : onNotFound()))
-        .catch(() => onError());
-};
-
-router.get("/:id", (req, res) => {
-    findUser(req.params.id,
-        {
-            onSuccess: usuario => res.send(usuario),
-            onNotFound: () => res.sendStatus(404),
-            onError: () => res.sendStatus(500)
-        }
-    );
+router.get("/", (req, res) => {
+    findUsers(req).then(materias => {
+        return (materias.length === 0) ? res.sendStatus(404) : res.send(materias);
+    })
+        .catch(() => {
+            res.sendStatus(500);
+        });
 });
 
 // router.put("/:id", (req, res) => {
 // });
 //
 
-router.delete("/:id", (req, res) => {
-    //DELATE ROW
-    const onSuccess = usuario =>
-        usuario
-            .destroy()
-            .then(() => res.sendStatus(200))
-            .catch(() => res.sendStatus(500));
-    findUser(req.params.id, {
-        onSuccess,
-        onNotFound: () => res.sendStatus(404),
-        onError: () => res.sendStatus(500)
-    });
-
-});
+// router.delete("/:id", (req, res) => {
+//
+// });
 
 module.exports = router;

@@ -1,8 +1,9 @@
 {
   "development": {
     "username": "root",
-    "password": "1234",
-    "database": "prueba",
+    "password": "root123",
+    "database": "api",
+    "port": 33061,
     "host": "localhost",
     "dialect": "mariadb"
   }
