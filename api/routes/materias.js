@@ -3,16 +3,21 @@ let router = express.Router();
 let models = require("../models");
 const {checkPagination, validateConnection} = require("./validations")
 
+router.use(function (req,res,next){
+    if (validateConnection(req.headers.authorization, res)){
+        next();
+    }else{
+        res.status(401).send({message: "Unauthorized"});
+    }
+})
+
 router.get("/", (req, res) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     console.log("comienzo servicio get [materias]");
     let pag = req.body.paginaActual - 1
     if(!checkPagination(pag, res))
         return;
-    if(req.headers.authorization !== "Basic cGVyc2lzdGVuY2lhOjEyMzQ="){ //user: persistencia password: 1234
-        return res.status(404).send({message: "Unauthorized"})
-    }
+
     let offset = pag * req.body.cantidadAVer;
     // Si paginaActual no esta definida en el body, no se le envia a la request
     models.materias
@@ -27,8 +32,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     models.materias
         .create({
             nombre: req.body.nombre,
@@ -46,8 +50,7 @@ router.post("/", (req, res) => {
 });
 
 const findMateria = (id, {onSuccess, onNotFound, onError}) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     models.materias
         .findOne({
             attributes: ["id", "nombre", "carreraId"],
@@ -58,8 +61,7 @@ const findMateria = (id, {onSuccess, onNotFound, onError}) => {
 };
 
 router.get("/:id", (req, res) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     findMateria(req.params.id, {
         onSuccess: materia => res.send(materia),
         onNotFound: () => res.sendStatus(404),
@@ -68,8 +70,7 @@ router.get("/:id", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     const onSuccess = materia =>
         materia
             .update({
@@ -93,8 +94,7 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     const onSuccess = materia =>
         materia
             .destroy()

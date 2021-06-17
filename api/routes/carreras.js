@@ -5,11 +5,19 @@ const messageFactory = require("./validations")
 const checkPagination = messageFactory.checkPagination
 const validateConnection = messageFactory.validateConnection
 
+router.use(function (req,res,next){
+    if (validateConnection(req.headers.authorization, res)){
+        next();
+    }else{
+        res.status(401).send({message: "Unauthorized"});
+    }
+})
+
 
 router.get("/", (req, res) => {
   console.log("comienzo servicio get [carreras]");
     //AUTHENTICATION
-    validateConnection(req.headers.authorization, res);
+
   let pag = req.body.paginaActual - 1
     if(!checkPagination(pag, res))
         return;
@@ -28,8 +36,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
     //AUTHENTICATION
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
 
     //INSERT ROW
     models.carrera
@@ -47,8 +54,7 @@ router.post("/", (req, res) => {
 });
 
 const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
 
   models.carrera
     .findOne({
@@ -70,8 +76,7 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
     //AUTHENTICATION
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
     //UPDATE ROW
     const onSuccess = carrera =>
     carrera
@@ -95,8 +100,7 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
     //AUTHENTICATION
-    if (!validateConnection(req.headers.authorization, res))
-        return;
+
 
     //DELATE ROW
     const onSuccess = carrera =>

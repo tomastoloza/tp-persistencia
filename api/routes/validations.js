@@ -1,4 +1,7 @@
-const models = require("../models");
+let models = require("../models");
+let express = require("express");
+let router = express.Router();
+
 module.exports = {
     checkPagination: checkPagination,
     validateConnection: validateConnection,
@@ -13,8 +16,9 @@ function checkPagination(pag, res) {
 }
 
 function validateConnection(authorization, res) {
-    let userExists;
+    //Si el user manda autenticacion
     if (authorization !== undefined) {
+        //Buscar el token en la db
         let users = models.usuario
             .findAll({
                 attributes: ["token"],
@@ -22,17 +26,16 @@ function validateConnection(authorization, res) {
                     token: authorization.split(" ")[1]
                 }
             });
-
-
-        users.then(r => {
-            userExists = r.length > 0;
-        })
-
-
+        //Definir si existe el user en la db
+        if (users.then(result => {
+            return result.length > 0;
+        })) {
+            return true;
+        }
     }
-    if (!userExists) {
-        res.status(401).send({message: "Unauthorized"});
-        return false;
-    }
-    return true;
+    //res.status(401).send({message: "Unauthorized"});
+    return false;
 }
+
+
+
