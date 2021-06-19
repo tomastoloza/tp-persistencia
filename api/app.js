@@ -6,6 +6,7 @@ var logger = require('morgan');
 var carrerasRouter = require('./routes/carreras');
 var materiasRouter = require('./routes/materias');
 var usuariosRouter = require('./routes/usuarios');
+const {validateConnection} = require("./routes/validations");
 
 
 var app = express();
@@ -13,6 +14,9 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+//Valida la autenticacion para todas los endpoints
+app.use(validateConnection);
 
 app.use(logger('dev'));
 app.use(express.json());

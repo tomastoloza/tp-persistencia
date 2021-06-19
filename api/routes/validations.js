@@ -15,27 +15,28 @@ function checkPagination(pag, res) {
     return true;
 }
 
-function validateConnection(authorization, res) {
+async function validateConnection(req, res, next) {
     //Si el user manda autenticacion
-    if (authorization !== undefined) {
+    if (req.headers && req.headers.authorization !== undefined) {
         //Buscar el token en la db
         let users = models.usuario
             .findAll({
                 attributes: ["token"],
                 where: {
-                    token: authorization.split(" ")[1]
+                    token: req.headers.authorization.split(" ")[1]
                 }
             });
         //Definir si existe el user en la db
-        if (users.then(result => {
-            return result.length > 0;
-        })) {
-            return true;
+        let userExists = await users.then(result => {
+            return Object.keys(result).length > 0;
+        });
+        if (userExists) {
+            return next();
         }
+        res.status(401).send("Unauthorized!");
     }
-    //res.status(401).send({message: "Unauthorized"});
-    return false;
 }
+
 
 
 

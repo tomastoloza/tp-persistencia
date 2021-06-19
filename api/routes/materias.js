@@ -3,14 +3,6 @@ let router = express.Router();
 let models = require("../models");
 const {checkPagination, validateConnection} = require("./validations")
 
-router.use(function (req,res,next){
-    if (validateConnection(req.headers.authorization, res)){
-        next();
-    }else{
-        res.status(401).send({message: "Unauthorized"});
-    }
-})
-
 router.get("/", (req, res) => {
 
     console.log("comienzo servicio get [materias]");
