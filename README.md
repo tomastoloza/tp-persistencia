@@ -4,11 +4,11 @@ Trabajo en progreso por [@tomastoloza](https://github.com/tomastoloza/)
 y [@galosalerno](https://github.com/galosalerno/)
 
 ## Servicios disponibles:
-* [Autorizacion](##Autorizacion)
-* [Materias](##Materias)
-* [Carreras](##Carreras)
+* Autorizacion
+* Materias
+* Carreras
 
-##Autorizacion
+## Autorizacion
 
 Nuestra API soporta los siguientes tipos de autenticacion:
 * Basic Auth 
@@ -41,7 +41,7 @@ Unauthorized!
 
 
 
-##Materias
+## Materias
 
 ### `GET` Request body example
 
