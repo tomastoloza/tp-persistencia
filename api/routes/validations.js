@@ -1,6 +1,4 @@
 let models = require("../models");
-let express = require("express");
-let router = express.Router();
 
 module.exports = {
     checkPagination: checkPagination,
@@ -33,8 +31,8 @@ async function validateConnection(req, res, next) {
         if (userExists) {
             return next();
         }
-        res.status(401).send("Unauthorized!");
     }
+    res.status(401).send("Unauthorized!");
 }
 
 

@@ -3,6 +3,7 @@ let router = express.Router();
 let models = require("../models");
 const {checkPagination, validateConnection} = require("./validations")
 
+router.use(validateConnection);
 router.get("/", (req, res) => {
 
     console.log("comienzo servicio get [materias]");

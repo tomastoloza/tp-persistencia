@@ -2,7 +2,10 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 const messageFactory = require("./validations")
+const {validateConnection} = require("./validations");
 const checkPagination = messageFactory.checkPagination
+
+router.use(validateConnection);
 
 router.get("/", (req, res) => {
   console.log("comienzo servicio get [carreras]");
