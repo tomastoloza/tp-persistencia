@@ -21,8 +21,9 @@ Para utilizar los servicios que necesitan autenticacion es necesario darla de al
 Este servicio es utilizado para dar de alta una autenticacion en el servicio.
 Para ello es necesario invocar al servicio `POST` con el header Authorization y nuestra autenticacion
 
-```http request
-curl --location --request GET 'localhost:3001/auth' \
+Ejemplo CURL
+```
+curl --location --request POST 'localhost:3001/auth' \
 --header 'Authorization: Basic cGVyc2lzdGVuY2lhOjEyMzQ='
 ```
 
