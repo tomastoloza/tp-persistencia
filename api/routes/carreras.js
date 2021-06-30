@@ -1,15 +1,16 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
-const messageFactory = require("./messageFactory")
+const messageFactory = require("./validations")
+const {validateConnection} = require("./validations");
 const checkPagination = messageFactory.checkPagination
-const validateConnection = messageFactory.validateConnection
 
+router.use(validateConnection);
 
 router.get("/", (req, res) => {
   console.log("comienzo servicio get [carreras]");
     //AUTHENTICATION
-    validateConnection(req.headers.authorization, res);
+
   let pag = req.body.paginaActual - 1
     if(!checkPagination(pag, res))
         return;
@@ -28,14 +29,14 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
     //AUTHENTICATION
-    validateConnection(req.headers.authorization, res);
+
 
     //INSERT ROW
     models.carrera
     .create({ nombre: req.body.nombre })
     .then(carrera => res.status(201).send({ id: carrera.id }))
     .catch(error => {
-      if (error === "SequelizeUniqueConstraintError: Validation error") {
+      if (error.message === "PRIMARY must be unique") {
         res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
       }
       else {
@@ -46,6 +47,8 @@ router.post("/", (req, res) => {
 });
 
 const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
+
+
   models.carrera
     .findOne({
         attributes: ["id", "nombre"],
@@ -66,7 +69,7 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
     //AUTHENTICATION
-    validateConnection(req.headers.authorization, res);
+
     //UPDATE ROW
     const onSuccess = carrera =>
     carrera
@@ -90,7 +93,7 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
     //AUTHENTICATION
-    validateConnection(req.headers.authorization, res);
+
 
     //DELATE ROW
     const onSuccess = carrera =>

@@ -3,19 +3,44 @@
 Trabajo en progreso por [@tomastoloza](https://github.com/tomastoloza/)
 y [@galosalerno](https://github.com/galosalerno/)
 
-## Request Authentication:
-Key | Value
---- | --- 
-Type      | Basic Auth
-Username  | persistencia
-Password  | 1234
+## Servicios disponibles:
+* Autorizacion
+* Materias
+* Carreras
 
-## Curl
+## Autorizacion
 
-```http request
-curl --location --request GET 'localhost:3001/mat' \
+Nuestra API soporta los siguientes tipos de autenticacion:
+* Basic Auth 
+* Bearer Token
+
+Para utilizar los servicios que necesitan autenticacion es necesario darla de alta utilizando el servicio `POST` de `/auth`
+
+### `POST`
+
+Este servicio es utilizado para dar de alta una autenticacion en el servicio.
+Para ello es necesario invocar al servicio `POST` con el header Authorization y nuestra autenticacion
+
+Ejemplo CURL
+```
+curl --location --request POST 'localhost:3001/auth' \
 --header 'Authorization: Basic cGVyc2lzdGVuY2lhOjEyMzQ='
 ```
+
+### `POST` response examples
+```json
+{
+  "token": "cGVyc2lzdGVuY2lhOjEyMzQ="
+}
+```
+
+Si falla la autenticacion tendremos la siguiente respuesta:
+
+```
+Unauthorized!
+```
+
+
 
 ## Materias
 
