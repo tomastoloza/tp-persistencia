@@ -24,6 +24,17 @@ Content-Type: application/json
 
 ###
 
+POST localhost:3001/mat
+Content-Type: application/json
+Authorization: Basic cGVyc2lzdGVuY2lhOjEyMzQ=
+
+{
+  "nombre": "Programacion Orientada a Objetos III",
+  "carreraId": ["4", "3"]
+}
+
+###
+
 GET localhost:3001/car
 Content-Type: application/json
 

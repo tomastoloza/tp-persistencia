@@ -40,8 +40,11 @@ router.post("/", (req, res) => {
         res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
       }
       else {
-        console.log(`Error al intentar insertar en la base de datos: ${error}`)
-        res.sendStatus(500)
+          res.status(500).send({
+              message: "Bad request",
+              errorType: error.name,
+              errorImage: "https://http.cat/500"
+          })
       }
     });
 });
@@ -76,13 +79,11 @@ router.put("/:id", (req, res) => {
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
-        if (error === "SequelizeUniqueConstraintError: Validation error") {
-          res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
-        }
-        else {
-          console.log(`Error al intentar actualizar la base de datos: ${error}`)
-          res.sendStatus(500)
-        }
+          res.status(500).send({
+              message: "Bad request",
+              errorType: error.name,
+              errorImage: "https://http.cat/500"
+          })
       });
     findCarrera(req.params.id, {
     onSuccess,
